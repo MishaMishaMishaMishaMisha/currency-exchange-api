@@ -7,37 +7,41 @@ from fastapi import (APIRouter,
 from fastapi.security import OAuth2PasswordRequestForm
 from loguru import logger
 
-from src.api.v1.dependencies.user import get_user_service
-from src.api.v1.dependencies.auth import get_auth_service
-from src.services.user import UserService
-from src.services.auth import AuthService
-from src.api.v1.schemas.user import UserAddDTO, UserResponseDTO
-from src.core.exceptions import (UserError,
-                                 UsernameTakenError,
-                                 EmailTakenError,
-                                 InvalidCredentialsError,
-                                 InvalidTokenError)
+from src.domain.exceptions import (UserError,
+                                   UsernameTakenError,
+                                   EmailTakenError,
+                                   InvalidCredentialsError,
+                                   InvalidTokenError)
+from src.application.services.auth import AuthService
+from src.application.services.user import UserService
+from src.application.dtos.user import CreateUserDTO, UserDTO # application dtos
+from src.presentation.api.v1.schemas.user import UserAddDTO, UserResponseDTO # presentation dtos
+from src.presentation.api.v1.dependencies.user import get_user_service
+from src.presentation.api.v1.dependencies.auth import get_auth_service
 
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
 
-@router.post("/register", response_model=UserResponseDTO)
-async def register_user(response: Response,
-                        new_user: UserAddDTO,
+@router.post("/register", 
+             response_model=UserResponseDTO,
+             status_code=status.HTTP_201_CREATED)
+async def register_user(new_user: UserAddDTO,
                         user_service: UserService = Depends(get_user_service)
                         ) -> UserResponseDTO:
     
     try:
         logger.info(f"try to add new user <{new_user.username}, {new_user.email}>")
         
-        user = await user_service.add_user(new_user)
+        application_user_dto = CreateUserDTO(username=new_user.username,
+                                            email=new_user.email,
+                                            password=new_user.password)
         
-        logger.info(f"new user added <{new_user.username}, {new_user.email}>")
+        user = await user_service.add_user(application_user_dto)
         
-        response.status_code = status.HTTP_201_CREATED    
+        logger.info(f"new user added <{new_user.username}, {new_user.email}>") 
         
-        return user
+        return UserResponseDTO.model_validate(user)
     
     except UsernameTakenError:
         logger.info(f"user try to register with existing username <{new_user.username}>")

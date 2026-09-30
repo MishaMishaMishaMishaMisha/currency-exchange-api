@@ -1,22 +1,22 @@
 from uuid import UUID
 
-from src.repositories.user import UserRepository
-from src.repositories.refresh_session import RefreshSessionRepository
+from src.domain.interfaces.repositories import (IUserRepository,
+                                                IRefreshSessionRepository)
+from src.domain.exceptions import (UserNotFoundError,
+                                   InvalidCredentialsError,
+                                   InvalidTokenError)
 from src.core.security import (verify_password, 
                                create_access_token, 
                                create_refresh_token,
                                decode_token,
                                TokenTypeEnum)
-from src.core.exceptions import (UserNotFoundError,
-                                 InvalidCredentialsError,
-                                 InvalidTokenError)
 
 
 class AuthService:
     
     def __init__(self, 
-                 user_repo: UserRepository, 
-                 session_repo: RefreshSessionRepository):
+                 user_repo: IUserRepository, 
+                 session_repo: IRefreshSessionRepository):
         
         self.user_repo = user_repo
         self.session_repo = session_repo
@@ -24,12 +24,12 @@ class AuthService:
     async def authenticate_user(self, login: str, password: str) -> tuple[str, str]:
         
         # try to find user by login
-        try:
-            if "@" in login:
-                user = await self.user_repo.get_user_by_email(login)
-            else:
-                user = await self.user_repo.get_user_by_username(login)
-        except UserNotFoundError:
+        if "@" in login:
+            user = await self.user_repo.get_user_by_email(login)
+        else:
+            user = await self.user_repo.get_user_by_username(login)
+        
+        if user is None:
             raise InvalidCredentialsError("wrong login")
         
         # check password
@@ -66,6 +66,8 @@ class AuthService:
         try:
             user_id = UUID(payload["sub"])
             user = await self.user_repo.get_user_by_id(user_id)
+            if user is None:
+                raise UserNotFoundError
             
         except (ValueError, KeyError):
             raise InvalidTokenError("Incorrect token payload")

@@ -4,23 +4,23 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import UUID
 from loguru import logger
 
-from src.repositories.user import UserRepository
-from src.repositories.refresh_session import RefreshSessionRepository
-from src.services.auth import AuthService
-from src.services.user import UserService
-from src.database.db_connection import get_db_session
-from src.models.user import UserModel
+from src.infrastructures.database.repositories.user import UserRepositorySQL
+from src.infrastructures.database.repositories.refresh_session import RefreshSessionRepositorySQL
+from src.application.services.auth import AuthService
+from src.application.services.user import UserService
+from src.infrastructures.database.db_connection import get_db_session
+from src.application.dtos.user import UserDTO
 from src.core.security import decode_token, TokenTypeEnum
-from src.core.exceptions import UserNotFoundError
-from src.api.v1.dependencies.user import get_user_service
+from src.domain.exceptions import UserNotFoundError
+from src.presentation.api.v1.dependencies.user import get_user_service
 
 
 def get_auth_service(
         db_session: AsyncSession = Depends(get_db_session)
         ) -> AuthService:
     
-    user_repo = UserRepository(db_session)
-    session_repo = RefreshSessionRepository(db_session)
+    user_repo = UserRepositorySQL(db_session)
+    session_repo = RefreshSessionRepositorySQL(db_session)
     auth_service = AuthService(user_repo=user_repo,
                                session_repo=session_repo)
     
@@ -35,7 +35,7 @@ oauth2_schem = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login",
 async def get_current_user_or_none(
         token: str = Depends(oauth2_schem),
         user_service: UserService = Depends(get_user_service)
-        ) -> UserModel | None:
+        ) -> UserDTO | None:
     
     logger.debug("getting user from access token: trying")
     
@@ -51,6 +51,8 @@ async def get_current_user_or_none(
     try:
         user_id = UUID(payload["sub"])
         user = await user_service.get_user(user_id)
+        if user is None:
+            raise UserNotFoundError
         
         logger.debug("getting user from access token: done")
         
@@ -67,8 +69,8 @@ async def get_current_user_or_none(
     
     
 async def get_current_user(
-            user: UserModel | None = Depends(get_current_user_or_none)
-            ) -> UserModel:
+            user: UserDTO | None = Depends(get_current_user_or_none)
+            ) -> UserDTO:
     
     if user is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,

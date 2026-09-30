@@ -1,5 +1,5 @@
-from src.models.base import BaseModel
-from src.database.db_connection import engine
+from src.infrastructures.database.models.base import BaseModel
+from src.infrastructures.database.db_connection import engine
 
 
 async def create_tables():

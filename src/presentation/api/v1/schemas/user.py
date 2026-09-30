@@ -6,7 +6,10 @@ from pydantic import BaseModel, Field, EmailStr
 
 class UserBaseDTO(BaseModel):
     
-    username: str = Field(min_length=8, max_length=25)
+    username: str = Field(min_length=8, 
+                          max_length=25, 
+                          pattern="^[A-Za-z][A-Za-z0-9_]+$",
+                          examples=["Black_knight2008"])
     email: EmailStr
 
 

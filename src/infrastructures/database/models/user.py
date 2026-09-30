@@ -4,7 +4,7 @@ from sqlalchemy import UUID as sqlalchemy_uuid
 from uuid import UUID as python_uuid
 from datetime import datetime
 
-from src.models.base import BaseModel
+from src.infrastructures.database.models.base import BaseModel
 
 
 class UserModel(BaseModel):

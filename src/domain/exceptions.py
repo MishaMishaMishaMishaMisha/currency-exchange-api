@@ -3,7 +3,7 @@ class UserError(Exception):
     pass
 
 class UserNotFoundError(UserError):
-    """User not found in db"""
+    """User not found"""
     pass
 
 class UsernameTakenError(UserError):

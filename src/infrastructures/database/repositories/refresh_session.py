@@ -3,15 +3,16 @@ from uuid import UUID
 from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.models.resfresh_session import RefreshSessionModel
+from src.infrastructures.database.models.resfresh_session import RefreshSessionModel
 from src.core.security import hash_token
 
 
-class RefreshSessionRepository:
+class RefreshSessionRepositorySQL:
     
     def __init__(self, db_session: AsyncSession):
         self.db = db_session
 
+    # protocol methods 
     async def create_session(self, 
                              user_id: UUID, 
                              token: str, 
@@ -55,5 +56,3 @@ class RefreshSessionRepository:
         
         await self.db.execute(query)
         await self.db.commit()
-
-        

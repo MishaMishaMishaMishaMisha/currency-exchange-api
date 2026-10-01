@@ -26,3 +26,21 @@ class InvalidCredentialsError(AuthError):
 class InvalidTokenError(AuthError):
     """Invalid token"""
     pass
+
+
+class CurrencyError(Exception):
+    """Base exception for currency"""
+    pass
+
+class CurrencyNotFoundError(CurrencyError):
+    """Currency not found"""
+    pass
+
+
+class ExternalAPIError(Exception):
+    """Base exception for external api"""
+    pass
+
+class IncorrectResponseFormatError(ExternalAPIError):
+    """Response of request to external api is incorrect"""
+    pass

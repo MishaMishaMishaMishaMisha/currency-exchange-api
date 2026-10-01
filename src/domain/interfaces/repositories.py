@@ -4,6 +4,7 @@ from datetime import datetime
 
 from src.domain.entities.user import UserEntity
 from src.domain.entities.refresh_session import RefreshSessionEntity
+from src.domain.entities.currency import CurrencyEntity
 
 
 class IUserRepository(Protocol):
@@ -40,5 +41,17 @@ class IRefreshSessionRepository(Protocol):
 
 
 class ICurrencyRepository(Protocol):
-    pass
+    
+    # insert with autoupdate
+    async def upsert_currencies(self, currencies: list[CurrencyEntity]) -> None:
+        pass
+    
+    async def get_all_currencies(self) -> Sequence[CurrencyEntity]:
+        pass
+
+    async def get_currency_by_name(self, currency_name: str) -> CurrencyEntity | None:
+        pass
+    
+    async def get_currency_by_codename(self, currency_codename: str) -> CurrencyEntity | None:
+        pass
 

@@ -49,8 +49,7 @@ COPY cron/crontab /tmp/crontab.tmp
 RUN crontab -u appuser /tmp/crontab.tmp \
     && rm /tmp/crontab.tmp
 # Create the log file to be able to run tail
-RUN touch /var/log/cron.log
-
+RUN touch /var/log/cron.log && chown appuser:appuser /var/log/cron.log
 # back to user
 USER appuser
 

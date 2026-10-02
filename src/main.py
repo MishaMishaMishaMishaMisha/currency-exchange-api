@@ -1,26 +1,26 @@
 from fastapi import FastAPI
 
-from src.api.v1.routers import api_v1_router
-
+from src.presentation.api.v1.routers import api_v1_router
 
 app = FastAPI()
 
 app.include_router(api_v1_router)
 
-# from src.database.tables_manager import create_tables, drop_tables
+##########
+# from src.infrastructures.database.tables_manager import create_tables, drop_tables
 
 # @app.get("/")
 # async def root() -> str:
 #     return "hello!!!"
 
 # @app.get("/create_tables")
-# async def create_tables():
+# async def create_tables_endp():
 #     await create_tables()
     
 # @app.get("/drop_tables")
-# async def drop_tables():
+# async def drop_tables_endp():
 #     await drop_tables()
-    
+############
 
     
 if __name__ == "__main__":

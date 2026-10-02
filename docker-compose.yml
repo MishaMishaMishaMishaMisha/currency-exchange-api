@@ -19,6 +19,23 @@ services:
         condition: service_started
     command: uv run uvicorn src.main:app --host ${APP_HOST} --port ${APP_PORT} --reload --reload-dir /app/src
 
+  cron:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: container-cron
+    env_file: .env
+    volumes:
+      - ./src:/app/src
+      - ./.env:/app/.env:ro
+    depends_on:
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_started
+    user: root
+    command: ./cron-entrypoint.sh
+
   db:
     image: postgres:17-alpine
     container_name: container-postgres

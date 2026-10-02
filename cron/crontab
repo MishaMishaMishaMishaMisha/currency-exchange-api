@@ -1,2 +1,6 @@
+SHELL=/bin/sh
+PATH=/opt/venv/bin:/usr/local/bin:/usr/bin:/bin
+UV_PROJECT_ENVIRONMENT=/opt/venv
+
 * * * * * echo "CRON WORKS $(date)" >> /var/log/cron.log 2>&1
-# * 1 * * uv run python -m src.presentation.cli.sync_currencies >> /var/log/cron.log 2>&1
+0 1 * * * uv run python -m src.presentation.cli.sync_currencies >> /var/log/cron.log 2>&1

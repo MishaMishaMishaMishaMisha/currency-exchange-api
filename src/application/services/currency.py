@@ -40,6 +40,9 @@ class CurrencyService:
         elif currency_codename_from and currency_codename_to:
             logger.debug("CurrencyService: convering currency by codename - getting info from db")
             
+            currency_codename_from = currency_codename_from.upper()
+            currency_codename_to = currency_codename_to.upper()
+            
             currency_from = await self.currency_repo.get_currency_by_codename(currency_codename_from)
             if currency_from is None:
                 raise CurrencyNotFoundError(f"Currency {currency_codename_from} not found")
@@ -79,8 +82,8 @@ class CurrencyService:
                         rate_to: float,
                         amount: float) -> tuple[float, float]:
         
-        exchange_rate = round(rate_from / rate_to, 2)
-        result = round(exchange_rate * amount, 2)
+        exchange_rate = round(rate_from / rate_to, 6)
+        result = round(exchange_rate * amount, 6)
         return (result, exchange_rate)
     
     def _to_convertedDto(self,

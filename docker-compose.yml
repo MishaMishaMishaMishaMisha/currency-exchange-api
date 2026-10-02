@@ -21,13 +21,13 @@ services:
 
   cron:
     build:
-      #context: ./cron
       context: .
       dockerfile: Dockerfile
     container_name: container-cron
     env_file: .env
     volumes:
       - ./src:/app/src
+      - ./.env:/app/.env:ro
     depends_on:
       db:
         condition: service_healthy

@@ -145,4 +145,5 @@ async def refresh(request: Request,
     
     except InvalidTokenError:
         logger.info("user try to refresh tokens: refresh token has expired")
-        pass
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="Refresh token has expired")

@@ -51,6 +51,15 @@ class JWTSettings(BaseSettings):
     model_config = SettingsConfigDict(env_file=ENV_FILE_PATH,
                                       env_prefix="JWT_",
                                       extra="ignore")
+    
+    
+class ExternalAPISettings(BaseSettings):
+    
+    CURRENCY_URL: str
+    
+    model_config = SettingsConfigDict(env_file=ENV_FILE_PATH,
+                                      env_prefix="EXTERNAL_API_",
+                                      extra="ignore")
 
 
 class ProjectSettings():
@@ -59,9 +68,8 @@ class ProjectSettings():
     redis: RedisSettings = RedisSettings()
     app: APPSettings = APPSettings()
     jwt: JWTSettings = JWTSettings()
+    external_api: ExternalAPISettings = ExternalAPISettings()
     
     
 settings = ProjectSettings()
 
-        
-        
